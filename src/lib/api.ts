@@ -12,6 +12,31 @@ const supabase: SupabaseClient | null =
 
 export const isDemoMode = supabase === null;
 
+interface VenueRow {
+  id: string;
+  name: string;
+  category: Venue['category'];
+  area: string;
+  lat: number;
+  lng: number;
+  maps_url?: string | null;
+  price_level?: number | null;
+  image_url?: string | null;
+}
+
+// Optional columns may not exist yet in an older database, so they default to null.
+const toVenue = (r: VenueRow): Venue => ({
+  id: r.id,
+  name: r.name,
+  category: r.category,
+  area: r.area,
+  lat: r.lat,
+  lng: r.lng,
+  mapsUrl: r.maps_url ?? null,
+  priceLevel: r.price_level ?? null,
+  imageUrl: r.image_url ?? null,
+});
+
 let demoReports = sampleReports();
 
 // Only reports from the last day matter; older ones can't be "live".
@@ -19,9 +44,12 @@ const lookbackIso = () => new Date(Date.now() - 24 * 60 * 60000).toISOString();
 
 export async function fetchVenues(): Promise<Venue[]> {
   if (!supabase) return SAMPLE_VENUES;
-  const { data, error } = await supabase.from('venues').select('id, name, category, area, lat, lng').order('name');
+  const { data, error } = await supabase
+    .from('venues')
+    .select('*')
+    .order('name');
   if (error) throw error;
-  return data as Venue[];
+  return data.map(toVenue);
 }
 
 export async function fetchReports(): Promise<StatusReport[]> {
@@ -45,7 +73,8 @@ export async function fetchVenueForToken(token: string): Promise<Venue | null> {
   if (!supabase) return SAMPLE_VENUES.find((v) => sampleToken(v.id) === token) ?? null;
   const { data, error } = await supabase.rpc('venue_for_token', { p_token: token });
   if (error) throw error;
-  return (data as Venue[])[0] ?? null;
+  const row = (data as VenueRow[])[0];
+  return row ? toVenue(row) : null;
 }
 
 export async function submitVenueStatus(token: string, groupSize: GroupSize, level: WaitLevel): Promise<void> {

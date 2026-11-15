@@ -4,11 +4,11 @@ import type { Category, GroupSize, Source, StatusReport, Venue, WaitLevel } from
 export const STALE_AFTER_MINUTES = 45;
 
 export const WAIT_LEVELS: Record<WaitLevel, { label: string; short: string; rank: number; color: string }> = {
-  none: { label: 'No wait', short: 'No wait', rank: 0, color: '#1f9d55' },
-  short: { label: 'Under 15 min', short: '<15 min', rank: 1, color: '#7cb518' },
-  medium: { label: '15–30 min', short: '15–30 min', rank: 2, color: '#e0a100' },
-  long: { label: '30–45+ min', short: '30–45+ min', rank: 3, color: '#e8590c' },
-  full: { label: 'Not taking walk-ins', short: 'Full', rank: 4, color: '#c92a2a' },
+  none: { label: 'No wait', short: 'No wait', rank: 0, color: '#1E8A4C' },
+  short: { label: 'Under 15 min', short: 'Under 15 min', rank: 1, color: '#4E8F2A' },
+  medium: { label: '15–30 min', short: '15–30 min', rank: 2, color: '#B7790B' },
+  long: { label: '30–45+ min', short: '30–45+ min', rank: 3, color: '#CF5A22' },
+  full: { label: 'Not taking walk-ins', short: 'Full', rank: 4, color: '#B9312F' },
 };
 
 export const WAIT_LEVEL_ORDER: WaitLevel[] = ['none', 'short', 'medium', 'long', 'full'];
@@ -26,8 +26,8 @@ export const GROUP_SIZES: Record<GroupSize, string> = {
 };
 
 export const SOURCES: Record<Source, string> = {
-  venue: 'Venue-verified',
-  community: 'Community-reported',
+  venue: 'From the venue',
+  community: 'From a visitor',
   estimate: 'Estimated',
 };
 

@@ -15,6 +15,9 @@ export interface Venue {
   area: string;
   lat: number;
   lng: number;
+  mapsUrl?: string | null; // Google Maps page for directions, menu and reviews
+  priceLevel?: number | null; // 1 = ₹ … 4 = ₹₹₹₹
+  imageUrl?: string | null; // cover photo; a category illustration is shown when empty
 }
 
 export interface StatusReport {

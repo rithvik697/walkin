@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Chip, colors } from '@/components/ui';
+import { colors, Feather, font, Segmented } from '@/components/ui';
 import { fetchVenueForToken, submitVenueStatus } from '@/lib/api';
 import { GROUP_SIZES, STALE_AFTER_MINUTES, WAIT_LEVEL_ORDER, WAIT_LEVELS } from '@/lib/status';
 import type { GroupSize, Venue, WaitLevel } from '@/lib/types';
@@ -46,11 +46,12 @@ export default function UpdateStatus() {
       <Text style={styles.venue}>{venue.name}</Text>
       <Text style={styles.prompt}>How long is the wait for a walk-in right now?</Text>
 
-      <View style={styles.groupRow}>
-        {(Object.keys(GROUP_SIZES) as GroupSize[]).map((g) => (
-          <Chip key={g} label={GROUP_SIZES[g]} selected={group === g} onPress={() => setGroup(g)} />
-        ))}
-      </View>
+      <Segmented
+        style={styles.groupRow}
+        options={(Object.keys(GROUP_SIZES) as GroupSize[]).map((g) => ({ value: g, label: `For ${GROUP_SIZES[g]}` }))}
+        value={group}
+        onChange={setGroup}
+      />
 
       {WAIT_LEVEL_ORDER.map((level) => (
         <Pressable
@@ -62,7 +63,11 @@ export default function UpdateStatus() {
             { backgroundColor: WAIT_LEVELS[level].color, opacity: pressed || saving === level ? 0.7 : 1 },
           ]}
         >
-          <Text style={styles.buttonText}>{WAIT_LEVELS[level].label}</Text>
+          {saving === level ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>{WAIT_LEVELS[level].label}</Text>
+          )}
         </Pressable>
       ))}
 
@@ -70,7 +75,7 @@ export default function UpdateStatus() {
       {saved && (
         <View style={styles.saved}>
           <Text style={styles.savedText}>
-            ✓ Saved {WAIT_LEVELS[saved.level].label} for {GROUP_SIZES[saved.group]} at{' '}
+            <Feather name="check-circle" size={15} color={colors.success} /> Saved {WAIT_LEVELS[saved.level].label} for {GROUP_SIZES[saved.group]} at{' '}
             {saved.at.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
           </Text>
           <Text style={styles.hint}>
@@ -84,14 +89,21 @@ export default function UpdateStatus() {
 
 const styles = StyleSheet.create({
   page: { padding: 20, paddingBottom: 48, maxWidth: 480, width: '100%', alignSelf: 'center' },
-  venue: { fontSize: 24, fontWeight: '800', color: colors.text },
-  prompt: { fontSize: 16, color: colors.muted, marginTop: 6, marginBottom: 16 },
-  groupRow: { flexDirection: 'row', marginBottom: 16 },
-  button: { borderRadius: 14, paddingVertical: 20, alignItems: 'center', marginBottom: 10 },
-  buttonText: { color: '#fff', fontSize: 19, fontWeight: '800' },
-  saved: { backgroundColor: '#eef6ee', borderRadius: 12, padding: 14, marginTop: 8 },
-  savedText: { fontSize: 15, fontWeight: '700', color: '#1f5130' },
-  hint: { fontSize: 13, color: '#3d6b4a', marginTop: 4 },
-  error: { color: '#c92a2a', marginTop: 8, fontSize: 15 },
-  message: { padding: 24, fontSize: 16, color: colors.muted },
+  venue: { fontFamily: font.serif, fontSize: 36, lineHeight: 40, color: colors.ink, letterSpacing: -0.5 },
+  prompt: { fontFamily: font.regular, fontSize: 15, lineHeight: 22, color: colors.muted, marginTop: 6, marginBottom: 18 },
+  groupRow: { marginBottom: 18 },
+  button: { borderRadius: 16, height: 62, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  buttonText: { fontFamily: font.semibold, color: '#fff', fontSize: 18 },
+  saved: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 14,
+    padding: 16,
+    marginTop: 8,
+  },
+  savedText: { fontFamily: font.semibold, fontSize: 15, color: colors.ink },
+  hint: { fontFamily: font.regular, fontSize: 13, lineHeight: 19, color: colors.muted, marginTop: 4 },
+  error: { fontFamily: font.medium, color: '#B9312F', marginTop: 8, fontSize: 14 },
+  message: { fontFamily: font.regular, padding: 24, fontSize: 15, color: colors.muted },
 });

@@ -7,6 +7,9 @@ create table venues (
   area text not null,
   lat double precision not null,
   lng double precision not null,
+  maps_url text,                                               -- Google Maps page: directions, menu, reviews
+  price_level smallint check (price_level between 1 and 4),   -- 1 = ₹ ... 4 = ₹₹₹₹
+  image_url text,                                              -- cover photo (optional)
   created_at timestamptz not null default now()
 );
 
